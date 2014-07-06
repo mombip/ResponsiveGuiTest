@@ -28,10 +28,14 @@ public class Worker {
 
     class WorkToDo implements Runnable {
 
-        ViewModel viewModel;
-
+//        ViewModel viewModel;
+        ProgressFacade progress;
+        GuiStateFacade guiState;
         public WorkToDo(ViewModel model) {
-            this.viewModel = model;
+//            this.viewModel = model;
+            progress = new ProgressFacade(model);
+            guiState = new GuiStateFacade(model);
+            
         }
         
 
@@ -39,13 +43,15 @@ public class Worker {
         public void run() {
             //Tutaj działasz sobie na obiekkcie ViewModel zamiast na komponentach GUI
             //Binding załatwia resztę!!!
+            int iterationsCountDependOnBuisnesLogic = 10;
             
-            viewModel.setFormEnabled(false);
-            viewModel.setInfo("START!!!");
+                    
+            guiState.enabled(false);
+            progress.init(iterationsCountDependOnBuisnesLogic, "START!!!");
 
-            for (int i = 1; i <= viewModel.getProgresMax(); i++) {
-                viewModel.setProgres(i);
-                viewModel.setInfo("Progres: " + i);
+            for (int i = 0; i < iterationsCountDependOnBuisnesLogic; i++) {
+                
+                progress.reportProgress(i+1, "Progres: " + (i+1));
                 System.out.println("Progres: " + i);
                 try {
                     Thread.sleep(500);
@@ -54,8 +60,8 @@ public class Worker {
                 }
             }
 
-            viewModel.setInfo("FINISHED!!!");
-            viewModel.setFormEnabled(true);
+            progress.finalize("FINISHED!!!");
+            guiState.enabled(true);
         }
     }
 
